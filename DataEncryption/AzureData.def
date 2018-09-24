@@ -1,0 +1,36 @@
+;;--------------------------------------------------------------------------
+;Output from CreateKeyVault.ps1:
+;
+;Key vault URI  : https://SteveIvesKeyVault.vault.azure.net
+;Secret name    : EncryptionPassword
+;Secret version : 1158f34d27754c1ea4766f1ba76fca9d
+;Secret value   : 7d821cdf-1ad4-42b4-a8bb-8453f3d0c970
+;AD Tenant ID   : 9c8abe8f-8a50-409c-a2c0-3704d42b208f
+;AD App ID      : 70b96d09-62b4-414c-8453-746c3081a57d
+;AD App Secret  : 330be8aa-542b-44b7-9ca6-24041438d51c
+;;--------------------------------------------------------------------------
+;
+;;; The Azure Active Directory tenant ID is the uniqe identifier of the instance of
+;;; Azure Active Directory being used.
+;
+.define AZURE_AD_TENANT_ID      "9c8abe8f-8a50-409c-a2c0-3704d42b208f"
+;
+;;; The Azure Active Directory application ID and secret are the unique identifier
+;;; and password associated with the Active Directrory application that was created
+;;; to allow your client application to authenticate.
+;
+.define AZURE_AD_APP_ID         "70b96d09-62b4-414c-8453-746c3081a57d"
+.define AZURE_AD_APP_SECRET     "330be8aa-542b-44b7-9ca6-24041438d51c"
+;
+;;; The Azure Key Vault instance is the host name portion of the unique URL that
+;;; is associated with the key vault that you created to store your secret values.
+;
+.define KEYVAULT_INSTANCE		"SteveIvesKeyVault.vault.azure.net"
+;
+;;; The Azure Key Vault secret name and version are the unique name and version
+;;; number of the specific secret value that you wish to access.
+;
+.define KEYVAULT_SECRET_NAME    "EncryptionPassword"
+.define KEYVAULT_SECRET_VERSION "1158f34d27754c1ea4766f1ba76fca9d"
+;
+;;--------------------------------------------------------------------------

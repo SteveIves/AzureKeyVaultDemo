@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2036
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{BBD0F5D1-1CC4-42FD-BA4C-A96779C64378}") = "DataEncryption", "DataEncryption\DataEncryption.synproj", "{F26BC344-1D15-41D9-A1CF-D9502E45F976}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{339EF451-3843-426E-9969-BEF38569CBA7}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		AzureData.def.example = AzureData.def.example
+		CreateKeyVault.ps1 = CreateKeyVault.ps1
+		LICENSE.md = LICENSE.md
+		README.md = README.md
+		TrustedRootCA.pem = TrustedRootCA.pem
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F26BC344-1D15-41D9-A1CF-D9502E45F976}.Debug|x64.ActiveCfg = Debug|x64
+		{F26BC344-1D15-41D9-A1CF-D9502E45F976}.Debug|x64.Build.0 = Debug|x64
+		{F26BC344-1D15-41D9-A1CF-D9502E45F976}.Debug|x86.ActiveCfg = Debug|x86
+		{F26BC344-1D15-41D9-A1CF-D9502E45F976}.Debug|x86.Build.0 = Debug|x86
+		{F26BC344-1D15-41D9-A1CF-D9502E45F976}.Release|x64.ActiveCfg = Release|x64
+		{F26BC344-1D15-41D9-A1CF-D9502E45F976}.Release|x64.Build.0 = Release|x64
+		{F26BC344-1D15-41D9-A1CF-D9502E45F976}.Release|x86.ActiveCfg = Release|x86
+		{F26BC344-1D15-41D9-A1CF-D9502E45F976}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {15433EC5-21D1-4097-B286-4E493548B8CA}
+	EndGlobalSection
+EndGlobal

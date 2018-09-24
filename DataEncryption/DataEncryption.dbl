@@ -1,0 +1,108 @@
+;;*****************************************************************************
+;;
+;; File:        DataEncryption.dbl
+;;
+;; Description: Data encryption example program
+;;
+;; Author:      Steve Ives, Synergex Professional Services Group
+;;
+;;*****************************************************************************
+;;
+;; Copyright (c) 2018, Synergex International, Inc.
+;; All rights reserved.
+;;
+;; Redistribution and use in source and binary forms, with or without
+;; modification, are permitted provided that the following conditions are met:
+;;
+;; * Redistributions of source code must retain the above copyright notice,
+;;   this list of conditions and the following disclaimer.
+;;
+;; * Redistributions in binary form must reproduce the above copyright notice,
+;;   this list of conditions and the following disclaimer in the documentation
+;;   and/or other materials provided with the distribution.
+;;
+;; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+;; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+;; IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+;; ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+;; LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+;; CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+;; SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+;; INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+;; CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+;; ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+;; POSSIBILITY OF SUCH DAMAGE.
+;;
+;;*****************************************************************************
+
+main
+
+    record
+        password,           string
+        salt,               string
+        iv,                 string
+        errorText,          string
+    endrecord
+
+    ;; This record contains "sensitive" information that needs to be encrypted
+    ;; Depending on the cipher being used, when data is encrypted the length of
+    ;; the data generally increases slightly. In this case we're using an AES
+    ;; 256-bit cipher and the encrypted data will always be extended to the next
+    ;; 16-byte boundary. Notice the SsnPadding field used for this purpose, as
+    ;; well as the use of a GROUP to provide easy access to both the unencrypted
+    ;; and encrypted versions of the data.
+
+    record employee
+        EmployeeId,         d6
+        FirstName,          a15
+        LastName,           a15
+        group SsnEncrypted, a
+            Ssn,            a11     ;Unencrypted data
+            SsnPadding,     a5      ;Padding to 16 bytes because AES cipher used
+        endgroup
+    endrecord
+
+proc
+
+    open(1,i,"tt:")
+    xcall flags(7004000,1)
+
+    ;;Retrieve the encryption keys from secure storage
+
+    if (!%GetEncryptionKeys(password,salt,iv,errorText)) then
+        writes(1,"ERROR: Failed to obtain encryption keys. Error was '" + errorText + "'")
+    else
+    begin
+        ;;Setup sample data
+
+        employee.EmployeeId = 1
+        employee.FirstName = "John"
+        employee.LastName = "Doe"
+        employee.Ssn = "123-45-6789"
+
+        writes(1,"Before encryption : [" + employee + "]")
+
+        ;;Encrypt sensitive fields
+
+        xcall data_encrypt(DC_AES256,password,Ssn,SsnEncrypted,,salt,iv)
+
+        writes(1,"After encryption  : [" + employee + "]")
+
+        ;;Decrypt sensitive fields
+
+        xcall data_decrypt(DC_AES256,password,SsnEncrypted,Ssn,,salt,iv)
+        clear SsnPadding
+
+        writes(1,"After decryption  : [" + employee + "]")
+    end
+
+    display(1,13,10,"Press a key: ")
+    begin
+        data keyval, a1
+        accept(1,keyval)
+    end
+
+    close 1
+    stop
+
+endmain

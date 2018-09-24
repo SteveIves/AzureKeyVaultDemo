@@ -1,0 +1,23 @@
+
+;; The Azure Active Directory tenant ID is the uniqe identifier of the instance of
+;; Azure Active Directory being used.
+
+.define AZURE_AD_TENANT_ID      ""
+
+;; The Azure Active Directory application ID and secret are the unique identifier
+;; and password associated with the Active Directrory application that was created
+;; to allow your client application to authenticate.
+
+.define AZURE_AD_APP_ID         ""
+.define AZURE_AD_APP_SECRET     ""
+
+;; The Azure Key Vault instance is the host name portion of the unique URL that
+;; is associated with the key vault that you created to store your secret values.
+
+.define KEYVAULT_INSTANCE		""
+
+;; The Azure Key Vault secret name annd version are the unique name and version
+;; number of the specific secret value that you wish to access.
+
+.define KEYVAULT_SECRET_NAME    ""
+.define KEYVAULT_SECRET_VERSION ""

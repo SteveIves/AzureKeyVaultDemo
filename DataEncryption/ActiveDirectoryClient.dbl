@@ -1,0 +1,96 @@
+;;*****************************************************************************
+;;
+;; File:        ActiveDirectoryClient.dbl
+;;
+;; Description: A Traditional Synergy client for certain functionality of
+;;              Microsoft Azure Active Directory service
+;;
+;; Author:      Steve Ives, Synergex Professional Services Group
+;;
+;;*****************************************************************************
+;;
+;; Copyright (c) 2018, Synergex International, Inc.
+;; All rights reserved.
+;;
+;; Redistribution and use in source and binary forms, with or without
+;; modification, are permitted provided that the following conditions are met:
+;;
+;; * Redistributions of source code must retain the above copyright notice,
+;;   this list of conditions and the following disclaimer.
+;;
+;; * Redistributions in binary form must reproduce the above copyright notice,
+;;   this list of conditions and the following disclaimer in the documentation
+;;   and/or other materials provided with the distribution.
+;;
+;; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+;; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+;; IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+;; ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+;; LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+;; CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+;; SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+;; INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+;; CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+;; ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+;; POSSIBILITY OF SUCH DAMAGE.
+;;
+;;*****************************************************************************
+
+namespace DataEncryption
+
+    public class ActiveDirectoryClient extends HttpBase
+        
+        private mAdTenantId, string
+
+        public method ActiveDirectoryClient
+            required in  adTenantId, string
+            parent()
+        proc
+            mAdTenantId = adTenantId
+        endmethod
+
+        public method ActiveDirectoryClient
+            required in  adTenantId, string
+            required in  aTimeout, int
+            parent(aTimeout)
+        proc
+            mAdTenantId = adTenantId
+        endmethod
+
+        public method GetAppAccessToken, string
+            required in  resource, string
+            required in  appId, string
+            required in  appSecret, string
+        proc
+            url = "https://login.windows.net/" + mAdTenantId + "/oauth2/token"
+
+            request = "grant_type=client_credentials&client_id=" + appId + "&client_secret=" + appSecret + "&resource=" + this.UrlEncode(resource)
+
+            requestHeaders = new string[4]
+            requestHeaders[1] = "Host: login.windows.net"
+            requestHeaders[2] = "Content-Type: application/x-www-form-urlencoded"
+            requestHeaders[3] = "Content-Length: " + %string(request.Length)
+            requestHeaders[4] = "Accept: application/json"
+
+            httpError = %http_post(url,this.Timeout,request,response,errorText,requestHeaders,responseHeaders,,,,,this.TrustedCaFile,,"1.1")
+
+            if (httpError) then
+            begin
+                this.ErrorMessage = errorText
+                mreturn ^null
+            end
+            else
+            begin
+                ;A successful response looks like this:
+                ;{"token_type":"Bearer","expires_in":"3600","ext_expires_in":"0","expires_on":"1515562199","not_before":"1515558299","resource":"https://vault.azure.net","access_token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Ino0NHdNZEh1OHdLc3VtcmJmYUs5OHF4czVZSSIsImtpZCI6Ino0NHdNZEh1OHdLc3VtcmJmYUs5OHF4czVZSSJ9.eyJhdWQiOiJodHRwczovL3ZhdWx0LmF6dXJlLm5ldCIsImlzcyI6Imh0dHBzOi8vc3RzLndpbmRvd3MubmV0LzljOGFiZThmLThhNTAtNDA5Yy1hMmMwLTM3MDRkNDJiMjA4Zi8iLCJpYXQiOjE1MTU1NTgyOTksIm5iZiI6MTUxNTU1ODI5OSwiZXhwIjoxNTE1NTYyMTk5LCJhaW8iOiJZMk5nWURoVnZMaEpZNDlCZDRYMm9VaFJrZlF6QUE9PSIsImFwcGlkIjoiNzA2YmJjNGYtMDQ1Yi00YTZkLWI3N2ItMjJjMWE5MmY1MzNkIiwiYXBwaWRhY3IiOiIxIiwiaWRwIjoiaHR0cHM6Ly9zdHMud2luZG93cy5uZXQvOWM4YWJlOGYtOGE1MC00MDljLWEyYzAtMzcwNGQ0MmIyMDhmLyIsIm9pZCI6IjViNjE4YTdmLWM4NDctNDlmNy1hNjE1LTU1ODRkNjcyMTBlOSIsInN1YiI6IjViNjE4YTdmLWM4NDctNDlmNy1hNjE1LTU1ODRkNjcyMTBlOSIsInRpZCI6IjljOGFiZThmLThhNTAtNDA5Yy1hMmMwLTM3MDRkNDJiMjA4ZiIsInV0aSI6IlQtTXU4UGpJRmsyMlMwYnJLNEVFQUEiLCJ2ZXIiOiIxLjAifQ.pPs57at18aQPdFGqil0E4yEMgmf7XZJydDzJqMtWu5cfqIAgAtmD9DAfoRkJc-R1NpyZmAvSXJLZcDSKAbRdKVNSLOyslTNyiHx5-JCBHczP-3jFNbJ7lLF-mM9_x-RisiQ0A2V1_AJx2Oum3BC6k0FUbYRdjbRfMiuF0PSuZs7cvtJClbCaG49LK0ghVijavQZCDh8M6QAx0uZvRy0Rk3EI8CPlrjRngrXWuWRsEtkM2aCnygdm_YcAJhOCXc-b0Lfw3E0tbRKg2SmYiIITGDRrBfgcjmrInGHc3ic54RDidXhWXD4fb0Zi6XCSxwNAy0OHs0bbSCgUU43oLiPevg"}
+                data startPos, i4, %instr(1,response,'"access_token":"') + 16
+                data endPos, i4, %instr(startPos,response,'"') - 1
+                this.ErrorMessage = ^null
+                mreturn response(startPos,endPos)
+            end
+
+        endmethod
+
+    endclass
+
+endnamespace

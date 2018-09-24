@@ -1,0 +1,129 @@
+;;*****************************************************************************
+;;
+;; File:        KeyVaultClient.dbl
+;;
+;; Description: A Traditional Synergy client for certain functionality of
+;;              Microsoft Azure Key Vault service
+;;
+;; Author:      Steve Ives, Synergex Professional Services Group
+;;
+;;*****************************************************************************
+;;
+;; Copyright (c) 2018, Synergex International, Inc.
+;; All rights reserved.
+;;
+;; Redistribution and use in source and binary forms, with or without
+;; modification, are permitted provided that the following conditions are met:
+;;
+;; * Redistributions of source code must retain the above copyright notice,
+;;   this list of conditions and the following disclaimer.
+;;
+;; * Redistributions in binary form must reproduce the above copyright notice,
+;;   this list of conditions and the following disclaimer in the documentation
+;;   and/or other materials provided with the distribution.
+;;
+;; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+;; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+;; IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+;; ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+;; LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+;; CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+;; SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+;; INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+;; CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+;; ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+;; POSSIBILITY OF SUCH DAMAGE.
+;;
+;;*****************************************************************************
+
+namespace DataEncryption
+
+    public class KeyVaultClient extends HttpBase
+
+        ;;Azure Key Vault REST API Documentation: https://docs.microsoft.com/en-us/rest/api/keyvault
+
+        private mKeyVaultHost, string
+        private mAuthToken, string
+        
+        public method KeyVaultClient
+            required in keyVaultHost, string
+            required in authToken, string
+            parent()
+        proc
+            mKeyVaultHost = keyVaultHost
+            mAuthToken = authToken
+        endmethod
+
+        public method KeyVaultClient
+            required in keyVaultHost, string
+            required in authToken, string
+            required in aTimeout, int
+            parent(aTimeout)
+        proc
+            mKeyVaultHost = keyVaultHost
+            mAuthToken = authToken
+        endmethod
+
+        public method GetSecret, string
+            required in secretName, string
+            required in secretVersion, string
+        proc
+            url = "https://" + mKeyVaultHost + "/secrets/" + secretName + "/" + secretVersion + "?api-version=2016-10-01"
+            requestHeaders = new string[3]
+            requestHeaders[1] = "Host: " + mKeyVaultHost
+            requestHeaders[2] = "Authorization: Bearer " + mAuthToken
+            requestHeaders[3] = "Accept: application/json"
+
+            httpError = %http_get(url,this.Timeout,response,errorText,requestHeaders,responseHeaders,,,,,this.TrustedCaFile,,"1.1")
+
+            if (httpError) then
+            begin
+                this.ErrorMessage = errorText
+                mreturn ^null
+            end
+            else
+            begin
+                ;A successful response looks like this:
+                ;{"value":"sdjfkjasKjkk@fdcsf83>&5d23$@eT5kdJD83^&2Awdnchg45sd*&2MNshdj23pP","id":"https://steveiveskeyvault.vault.azure.net/secrets/EncryptionPassword/c854e29ebd0f4d7d8e23669822f5c820","attributes":{"enabled":true,"created":1515459508,"updated":1515459508,"recoveryLevel":"Purgeable"}}
+                data startPos, i4, %instr(1,response,'"value":"') + 9
+                data endPos, i4, %instr(startPos,response,'"') - 1
+                this.ErrorMessage = ^null
+                mreturn response(startPos,endPos)
+            end
+
+        endmethod
+
+        public method SetSecret, boolean
+            required in secretName, string
+            required in secretValue, string
+        proc
+            url = "https://" + mKeyVaultHost + "/secrets/" + secretName + "?api-version=2016-10-01"
+
+            request = "value=" + this.UrlEncode(secretValue)
+
+            requestHeaders = new string[4]
+            requestHeaders[1] = "Host: " + mKeyVaultHost
+            requestHeaders[2] = "Content-Type: application/x-www-form-urlencoded"
+            requestHeaders[3] = "Content-Length: " + %string(request.Length)
+            requestHeaders[4] = "Accept: application/json"
+
+            httpError = %http_put(url,,request,response,errorText,requestHeaders,,,,,this.TrustedCaFile,,"1.1",responseHeaders)
+
+            if (httpError) then
+            begin
+                this.ErrorMessage = errorText
+                mreturn false
+            end
+            else
+            begin
+                ;A successful response looks like this:
+                ;
+                this.ErrorMessage = ^null
+                mreturn true
+            end
+
+        endmethod
+
+    endclass
+
+endnamespace
