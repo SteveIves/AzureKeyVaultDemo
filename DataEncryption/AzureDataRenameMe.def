@@ -1,4 +1,10 @@
 ;;--------------------------------------------------------------------------
+;; IMPORTANT:
+;;
+;; You will need to rename this file to AxureData.def and fill out values for
+;; all of the tempy .define fields below in order to make this example work.
+;;
+;;--------------------------------------------------------------------------
 ;
 ;;; The Azure Active Directory tenant ID is the uniqe identifier of the instance of
 ;;; Azure Active Directory being used.

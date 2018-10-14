@@ -59,6 +59,9 @@
     <Content Include="AzureData.def">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="AzureDataRenameMe.def">
+      <SubType>Content</SubType>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Synergex\dbl\Synergex.SynergyDE.Traditional.targets" />
   <PropertyGroup>

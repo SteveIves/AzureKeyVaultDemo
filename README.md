@@ -161,7 +161,8 @@ PS> Set-AzureRmKeyVaultAccessPolicy -VaultName 'MyAppSecretsVault' -ServicePrinc
 Having configured your Azure Key Vault and Active Directory services you will need to record
 several pieces of information in the source code of the sample application.
 
-Edit AzureData.def and declare values for the following identifiers.
+Copy the contents of AzureDataRenameMe.dbl to AzureData.def and then declare values for the following
+identifiers:
 
 | Identifier              | Value                                                              |
 | ----------------------- | ------------------------------------------------------------------ |
